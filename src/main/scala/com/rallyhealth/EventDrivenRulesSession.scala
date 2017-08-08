@@ -19,7 +19,7 @@ class EventDrivenRulesSession(knowledgeBase: KnowledgeBase, facts: Set[Fact]) {
 
   private val backgroundFacts = facts diff events.toSet
 
-  def getInferences(eventSubset: Seq[Event]) = {
+  def getInferences(eventSubset: Seq[Event]): Set[Fact] = {
 
     require(events.containsSlice(eventSubset), "the event subset should be a slice in the ordered set of total events")
 

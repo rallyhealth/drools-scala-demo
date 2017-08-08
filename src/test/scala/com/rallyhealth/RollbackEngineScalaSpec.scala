@@ -1,17 +1,16 @@
 package com.rallyhealth
 
-
-import com.rallyhealth.vocab.{Fact, Rollback, Event, Nullify}
+import com.rallyhealth.Fixtures._
+import com.rallyhealth.vocab.{Rollback, Fact, Event, Nullify}
 import com.rallyhealth.vocab.incentives._
 import org.joda.time.DateTime
-import org.junit.{Test, Assert}
+import org.scalatest.{Matchers, FlatSpec}
 import com.rallyhealth.implicits.FactImplicits._
 import DateTimeImplicits._
-import Fixtures._
 
-class RollbackEngineTest {
+class RollbackEngineScalaSpec extends FlatSpec with Matchers {
 
-  @Test def rollbackBodyFatReading(): Unit = {
+  "A 'nullified' failed body fat reading " should "cause inferences to be rolled back in the case where an employee has completed the alternative" in {
 
     val now = DateTime.now
 
@@ -40,23 +39,19 @@ class RollbackEngineTest {
     val underlying =
       rollbackInstance.inferencesToReverse.toSet[Fact].filterByType[Rollback].map(_.assertion)
 
-    Assert.assertTrue(
-      underlying.contains(
-        Eligible(Employee("DONALD.FAGEN"),Reward(100,"dollars"))
-      )
-    )
+    underlying.contains(
+      Eligible(Employee("DONALD.FAGEN"),Reward(100,"dollars"))
+    ) === true
 
-    Assert.assertTrue(
-      underlying.contains(
-        Failed(Employee("DONALD.FAGEN"),BasicActivity("BODY.FAT.TARGET"), now, now)
-      )
-    )
 
-    Assert.assertTrue(
-      underlying.contains(
-        Unlocked(BasicActivity("COMPANY.FITNESS.CHALLENGE"))
-      )
-    )
+    underlying.contains(
+      Failed(Employee("DONALD.FAGEN"),BasicActivity("BODY.FAT.TARGET"), now, now)
+    ) === true
+
+
+    underlying.contains(
+      Unlocked(BasicActivity("COMPANY.FITNESS.CHALLENGE"))
+    ) === true
 
   }
 

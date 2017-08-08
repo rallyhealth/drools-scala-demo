@@ -7,13 +7,13 @@ import scala.collection.mutable
 /**
  * Extracts all facts from composite predicates.
  */
-object Extractor {
+object FactExtractor {
 
   /**
    * Given the fact LessThen(Number(1), Number(2)), this method produces a set
    * { Number(1), Number(2), LessThan(Number(1), Number(2)) }
    */
-  def apply(fact: Fact): Set[Fact] = {
+  def unwrap(fact: Fact): Set[Fact] = {
     def getAllFacts(fact: Fact, collection: mutable.HashSet[Fact]): Unit = {
       collection += fact
       fact.productIterator.foreach {
@@ -34,6 +34,6 @@ object Extractor {
   }
 
 
-  def apply(facts: Set[Fact]): Set[Fact] = facts.flatMap(apply)
+  def unwrap(facts: Set[Fact]): Set[Fact] = facts.flatMap(unwrap)
 
 }

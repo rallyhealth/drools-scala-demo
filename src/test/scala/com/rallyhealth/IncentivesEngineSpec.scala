@@ -1,19 +1,20 @@
 package com.rallyhealth
 
+import com.rallyhealth.Fixtures._
+import com.rallyhealth.implicits.FactImplicits._
 import com.rallyhealth.vocab.incentives._
 import org.joda.time.DateTime
-import org.junit.{Test, Assert}
-import com.rallyhealth.implicits.FactImplicits._
-import Fixtures._
+import org.scalatest._
+import com.rallyhealth.vocab.incentives.Failed
 
-class IncentivesEngineTest {
+class IncentivesEngineSpec extends FlatSpec with Matchers {
 
-  @Test def employeePassesBodyFat(): Unit = {
+  private val now = DateTime.now
 
-    val now = DateTime.now
+  "An employee who obtains a successful body fat reading " should "earn a reward" in {
 
     println("---- Background facts for employee incentives plan ----")
-    wellnessPlan.alphabetize.foreach(println)
+    wellnessPlan.foreach(println)
     println()
 
     val reading = BodyFatReading(Employee("DONALD.FAGEN"), 25, now, now)
@@ -29,21 +30,16 @@ class IncentivesEngineTest {
     }
 
     println("---- Inferences after processing a body fat percentage of 25 ----")
-    inferences.alphabetize.foreach(println)
+    inferences.foreach(println)
 
-    Assert.assertEquals(
-      Eligible(Employee("DONALD.FAGEN"),Reward(100,"dollars")),
-      inferences.filterByType[Eligible].head
-    )
+    inferences.filterByType[Eligible].head should be (Eligible(Employee("DONALD.FAGEN"),Reward(100,"dollars")))
 
   }
 
-  @Test def employeeFailsBodyFat(): Unit = {
-
-    val now = DateTime.now
+  "An employee who fails to obtain the target body fat " should " have a Failed inference generated " in {
 
     println("---- Background facts for employee incentives plan ----")
-    wellnessPlan.alphabetize.foreach(println)
+    wellnessPlan.foreach(println)
     println()
 
     val reading = BodyFatReading(Employee("DONALD.FAGEN"), 28, now, now)
@@ -59,21 +55,16 @@ class IncentivesEngineTest {
     }
 
     println("---- Inferences after processing a body fat percentage of 28 ----")
-    inferences.alphabetize.foreach(println)
+    inferences.foreach(println)
 
-    Assert.assertEquals(
-      Failed(Employee("DONALD.FAGEN"),BasicActivity("BODY.FAT.TARGET"), now, now),
-      inferences.filterByType[Failed].head
-    )
+    inferences.filterByType[Failed].head should be (Failed(Employee("DONALD.FAGEN"),BasicActivity("BODY.FAT.TARGET"), now, now))
 
   }
 
-  @Test def employeeFailsBodyFatCompletesAlternative: Unit = {
-
-    val now = DateTime.now
+  "An employee who fails to obtain the target body fat but subsequently completes an alternative activity" should "unlock the alternative and earn a reward" in {
 
     println("---- Background facts for employee incentives plan ----")
-    wellnessPlan.alphabetize.foreach(println)
+    wellnessPlan.foreach(println)
     println()
 
     val reading = BodyFatReading(Employee("DONALD.FAGEN"), 28, now, now)
@@ -94,27 +85,21 @@ class IncentivesEngineTest {
     }
 
     println("---- Inferences after processing events ----")
-    inferences.alphabetize.foreach(println)
+    inferences.foreach(println)
 
-    Assert.assertTrue(
-      inferences.contains(
-        Failed(Employee("DONALD.FAGEN"),BasicActivity("BODY.FAT.TARGET"), now, now)
-      )
-    )
+    inferences.filterByType[Failed].head should be (Failed(Employee("DONALD.FAGEN"),BasicActivity("BODY.FAT.TARGET"), now, now))
 
-    Assert.assertTrue(
-      inferences.contains(
-        Unlocked(
-          Choice("BODY.FAT.OR.CHALLENGE",BasicActivity("BODY.FAT.TARGET"),BasicActivity("COMPANY.FITNESS.CHALLENGE"))
-        )
+    inferences.contains(
+      Unlocked(
+        Choice("BODY.FAT.OR.CHALLENGE",BasicActivity("BODY.FAT.TARGET"),BasicActivity("COMPANY.FITNESS.CHALLENGE"))
       )
-    )
+    ) === true
 
-    Assert.assertTrue(
-      inferences.contains(
-        Eligible(Employee("DONALD.FAGEN"),Reward(100,"dollars"))
-      )
-    )
+
+    inferences.contains(
+      Eligible(Employee("DONALD.FAGEN"),Reward(100,"dollars"))
+    ) === true
+
 
   }
 

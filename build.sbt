@@ -12,9 +12,9 @@ libraryDependencies += "org.drools" % "knowledge-api" % "6.1.0.Final"
 
 libraryDependencies += "joda-time" % "joda-time" % "2.9.7"
 
-libraryDependencies += "junit" % "junit" % "4.12" % Test
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
 
-libraryDependencies +=  "com.novocode" % "junit-interface" % "0.11" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
 resolvers += "jboss-releases" at "https://repository.jboss.org/nexus/content/repositories/releases"
 

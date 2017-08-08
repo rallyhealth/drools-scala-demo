@@ -42,21 +42,21 @@ import DateTimeImplicits._
  */
 class EventStreamHelper(facts: Set[Fact]) {
 
-  val events = facts.collect{ case x : Event => x }.toSeq.sorted
+  lazy val events: Seq[Event] = facts.collect{ case x : Event => x }.toSeq.sorted
 
-  private val nullificationEvents = events.collect{ case x: Nullify => x}
+  private lazy val nullificationEvents = events.collect{ case x: Nullify => x}
 
-  private val nullificationEventIndexes = events.zipWithIndex.filter(_._1.isInstanceOf[Nullify]).map(_._2)
+  private lazy val nullificationEventIndexes = events.zipWithIndex.filter(_._1.isInstanceOf[Nullify]).map(_._2)
 
-  private val nullificationByEvent = nullificationEvents.map(e => e.event -> e).toMap
+  private lazy val nullificationByEvent = nullificationEvents.map(e => e.event -> e).toMap
 
-  private val eventSubStreams =
+  private lazy val eventSubStreams =
     nullificationEventIndexes.map(index => events.slice(0, index + 1))
 
-  val nonNullifiedEvents =
+  lazy val nonNullifiedEvents: Seq[Event] =
     events.filterNot(_.isInstanceOf[Nullify]).filterNot(nullificationByEvent.contains)
 
-  val eventStreamPairs =
+  lazy val eventStreamPairs: Seq[EventStreamContainer] =
     eventSubStreams.map{stream =>
 
       val mostRecentNullify = stream.last.asInstanceOf[Nullify]

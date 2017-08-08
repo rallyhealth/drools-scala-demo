@@ -14,8 +14,7 @@ object Event {
    * @tparam A the type of event to order
    * @return an ordering for events. Events are ordered first by their time of receipt, next by their timestamp
    *         and finally by their string representation. These three properties determine a total ordering on
-   *         events which is essential for deterministic rule execution and inferences. Don't modify this unless
-   *         you know what you're doing.
+   *         events which is essential for deterministic rule execution and inferences.
    */
   implicit def eventTotalOrder[A <: Event]: Ordering[A] = {
 

@@ -1,6 +1,6 @@
 package com.rallyhealth
 
-import com.rallyhealth.vocab.{Rollback, Nullify, Fact}
+import com.rallyhealth.vocab.{Event, Rollback, Nullify, Fact}
 import org.drools.KnowledgeBase
 import com.rallyhealth.implicits.FactImplicits._
 
@@ -8,9 +8,9 @@ class RollbackEngine(facts: Set[Fact], knowledgeBase: KnowledgeBase) {
 
   private val eventStreamHelper = new EventStreamHelper(facts)
 
-  val backgroundFacts = facts -- eventStreamHelper.events
+  val backgroundFacts: Set[Fact] = facts -- eventStreamHelper.events
 
-  def nonNullifiedEvents = eventStreamHelper.nonNullifiedEvents
+  def nonNullifiedEvents: Seq[Event] = eventStreamHelper.nonNullifiedEvents
 
   def inferencesToReverse: Seq[Fact] = {
     if (facts.exists(_.isInstanceOf[Nullify])) {

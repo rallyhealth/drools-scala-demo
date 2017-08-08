@@ -13,7 +13,6 @@ when
     RequiresFailureOf($toUnlock: firstActivity(),  $toFail : secondActivity())
     Failed(activity() == $toFail)
 then
-   //System.err.println($activity);
    insert(new Unlocked($toUnlock) );
 end
 
